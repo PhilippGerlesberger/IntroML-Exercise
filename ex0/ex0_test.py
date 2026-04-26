@@ -71,12 +71,16 @@ class Tests(TestCase):
 
         self.assertEqual(image_converted.all(), test_image.all(), "The colour conversion from BGR to RGB is incorrect!")
         self.assertEqual(image_converted_colour_type, "RGB", "The colour scheme is set incorrectly")
+        self.assertTrue(np.array_equal(image_converted[:, :, 0], test_image[:, :, 2]), "The colour conversion from BGR to RGB is incorrect!")
+        self.assertTrue(np.array_equal(image_converted[:, :, 1], test_image[:, :, 1]), "The colour conversion from BGR to RGB is incorrect!")
+        self.assertTrue(np.array_equal(image_converted[:, :, 2], test_image[:, :, 0]), "The colour conversion from BGR to RGB is incorrect!")
+        
 
         delete_image(image_path)
 
     def test_rgb_to_bgr(self):
         test_image, image_path = create_image("test.png")
-
+    
         processor: ImageProcessor = ImageProcessor(image_path, "RGB")
         processor.convert_colour()
         image_converted, image_converted_colour_type = processor.get_image_data()
@@ -86,6 +90,7 @@ class Tests(TestCase):
         self.assertEqual(image_converted.all(), test_image_converted.all(),
                          "The colour conversion from RGB to BGR is incorrect!")
         self.assertEqual(image_converted_colour_type, "BGR", "The colour scheme is set incorrectly")
+        self.assertTrue(np.array_equal(image_converted, test_image_converted), "The colour conversion from BGR to RGB is incorrect!")
 
         delete_image(image_path)
 
@@ -100,7 +105,11 @@ class Tests(TestCase):
 
         self.assertEqual(clipped_image.all(), test_image_clipped.all(),
                          "The clip function does not show the correct behaviour!")
-
+        
+        self.assertTrue(
+            np.array_equal(clipped_image, test_image_clipped),
+            "The clip function does not show the correct behaviour!"
+        )
         delete_image(image_path)
 
     def test_flip_horizontal(self):
@@ -114,6 +123,7 @@ class Tests(TestCase):
 
         self.assertEqual(flipped_image.all(), test_image_flipped.all(),
                          "The horizontal flip does not work correctly!")
+        self.assertTrue(np.array_equal(flipped_image, test_image_flipped), "The horizontal flip does not work correctly!")
 
         delete_image(image_path)
 
@@ -128,6 +138,7 @@ class Tests(TestCase):
 
         self.assertEqual(flipped_image.all(), test_image_flipped.all(),
                          "The vertical flip does not work correctly!")
+        self.assertTrue(np.array_equal(flipped_image, test_image_flipped))
 
         delete_image(image_path)
 
@@ -142,6 +153,81 @@ class Tests(TestCase):
 
         self.assertEqual(flipped_image.all(), test_image_flipped.all(),
                          "Flipping the image in both directions does not work correctly!")
+        self.assertTrue(np.array_equal(flipped_image, test_image_flipped), "Flipping the image in both directions does not work correctly!")
+
+        delete_image(image_path)
+
+    def test_rotate_90(self):
+        test_image, image_path = create_image("test.png")
+
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+        processor.rotate_image(90)
+        rotated_image, _ = processor.get_image_data()
+
+        expected_image: np.ndarray = np.rot90(test_image, -1)
+
+        self.assertTrue(
+            np.array_equal(rotated_image, expected_image),
+            "The 90 degree rotation does not work correctly!"
+        )
+
+        delete_image(image_path)
+
+    def test_rotate_180(self):
+        test_image, image_path = create_image("test.png")
+
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+        processor.rotate_image(180)
+        rotated_image, _ = processor.get_image_data()
+
+        expected_image: np.ndarray = np.rot90(test_image, 2)
+
+        self.assertTrue(
+            np.array_equal(rotated_image, expected_image),
+            "The 180 degree rotation does not work correctly!"
+        )
+
+        delete_image(image_path)
+
+    def test_rotate_270(self):
+        test_image, image_path = create_image("test.png")
+
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+        processor.rotate_image(270)
+        rotated_image, _ = processor.get_image_data()
+
+        expected_image: np.ndarray = np.rot90(test_image, -3)
+
+        self.assertTrue(
+            np.array_equal(rotated_image, expected_image),
+            "The 270 degree rotation does not work correctly!"
+        )
+
+        delete_image(image_path)
+
+    def test_rotate_360(self):
+        test_image, image_path = create_image("test.png")
+
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+        processor.rotate_image(360)
+        rotated_image, _ = processor.get_image_data()
+
+        expected_image: np.ndarray = test_image.copy()
+
+        self.assertTrue(
+            np.array_equal(rotated_image, expected_image),
+            "The 360 degree rotation does not work correctly!"
+        )
+
+        delete_image(image_path)
+
+    def test_rotate_invalid_angle(self):
+        test_image, image_path = create_image("test.png")
+
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+
+        with self.assertRaises(ValueError):
+            processor.rotate_image(45)
 
         delete_image(image_path)
 
