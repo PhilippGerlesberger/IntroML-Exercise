@@ -87,10 +87,10 @@ class Tests(TestCase):
 
         test_image_converted: np.ndarray = cv2.cvtColor(test_image, cv2.COLOR_RGB2BGR)
 
-        self.assertEqual(image_converted.all(), test_image_converted.all(),
+        self.assertEqual(image_converted.all(), test_image.all(),
                          "The colour conversion from RGB to BGR is incorrect!")
         self.assertEqual(image_converted_colour_type, "BGR", "The colour scheme is set incorrectly")
-        self.assertTrue(np.array_equal(image_converted, test_image_converted), "The colour conversion from BGR to RGB is incorrect!")
+        self.assertTrue(np.array_equal(image_converted, test_image), "The colour conversion from BGR to RGB is incorrect!")
 
         delete_image(image_path)
 
