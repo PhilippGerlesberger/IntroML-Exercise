@@ -189,14 +189,13 @@ class ImageProcessor:
         if flip_value not in [0, 1, 2]:
             raise ValueError("The provided flip value must be either 0, 1 or 2!")
 
-        dim = self._image.ndim
         # Flip the image using indexing.
-        if flip_value == 0:
-            self._image = self._image[:,::-1,:] if dim == 3 else self._image[:,::-1]
-        elif flip_value == 1:
-            self._image = self._image[::-1,:,:] if dim == 3 else self._image[::-1,:]
-        else:
-            self._image = self._image[::-1,::-1,:] if dim == 3 else self._image[::-1,::-1]
+        if flip_value == FlipMode.HORIZONTAL:
+            self._image = self._image[:, ::-1]
+        elif flip_value == FlipMode.VERTICAL:
+            self._image = self._image[::-1, :]
+        elif flip_value == FlipMode.HORIZONTAL_AND_VERTICAL:
+            self._image = self._image[::-1, ::-1]
 
 
     def crop_center(self, new_height: int, new_width: int):
