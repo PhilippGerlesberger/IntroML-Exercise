@@ -74,18 +74,19 @@ class Tests(TestCase):
         self.assertTrue(np.array_equal(image_converted[:, :, 0], test_image[:, :, 2]), "The colour conversion from BGR to RGB is incorrect!")
         self.assertTrue(np.array_equal(image_converted[:, :, 1], test_image[:, :, 1]), "The colour conversion from BGR to RGB is incorrect!")
         self.assertTrue(np.array_equal(image_converted[:, :, 2], test_image[:, :, 0]), "The colour conversion from BGR to RGB is incorrect!")
-        
+
 
         delete_image(image_path)
 
     def test_rgb_to_bgr(self):
         test_image, image_path = create_image("test.png")
-    
+
         processor: ImageProcessor = ImageProcessor(image_path, "RGB")
+        image, image_colour_type = processor.get_image_data()
         processor.convert_colour()
         image_converted, image_converted_colour_type = processor.get_image_data()
 
-        test_image_converted: np.ndarray = cv2.cvtColor(test_image, cv2.COLOR_RGB2BGR)
+        test_image_converted: np.ndarray = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
         self.assertEqual(image_converted.all(), test_image_converted.all(),
                          "The colour conversion from RGB to BGR is incorrect!")
@@ -105,7 +106,7 @@ class Tests(TestCase):
 
         self.assertEqual(clipped_image.all(), test_image_clipped.all(),
                          "The clip function does not show the correct behaviour!")
-        
+
         self.assertTrue(
             np.array_equal(clipped_image, test_image_clipped),
             "The clip function does not show the correct behaviour!"
@@ -228,6 +229,19 @@ class Tests(TestCase):
 
         with self.assertRaises(ValueError):
             processor.rotate_image(45)
+
+        delete_image(image_path)
+
+    def test_resize(self):
+        test_image, image_path = create_image("test.png")
+
+        new_height, new_width = 50, 75
+        processor: ImageProcessor = ImageProcessor(image_path, "BGR")
+        processor.resize_image(new_height, new_width)
+        resized_image, _ = processor.get_image_data()
+
+        self.assertEqual(resized_image.shape[0], new_height, "Resized image has incorrect height!")
+        self.assertEqual(resized_image.shape[1], new_width, "Resized image has incorrect width!")
 
         delete_image(image_path)
 
