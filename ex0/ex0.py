@@ -146,7 +146,7 @@ class ImageProcessor:
         Transpose the image by swapping height and width while preserving colour channels.
         """
 
-        if self._colour_type == "Grey":
+        if self._colour_type == "Gray":
             self._image = np.transpose(self._image)
         else:
             self._image = np.transpose(self._image, (1, 0, 2))
