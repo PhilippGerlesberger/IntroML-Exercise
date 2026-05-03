@@ -236,7 +236,7 @@ class ImageProcessor:
         new_width (int): Width of the resized image.
         """
         # Resize the image. Research the available options in CV2.
-        cv2.resize(self._image, (new_width, new_height))
+        self._image = cv2.resize(self._image, (new_width, new_height))
 
 
 if __name__ == '__main__':
