@@ -13,10 +13,17 @@ def load_image(path: str) -> np.ndarray:
 
 
 def compute_histogram(image: np.ndarray) -> np.ndarray:
-    # ToDo: Create a histogram for the given image (256 values).
-    # ToDo: Don't use functions like np.histogram.
-    # ToDo: It is easier if you flatten your image first.
-    histogram = np.zeros(0)
+    """
+    Create a histogram for the given image (256 values).
+    """
+    # Don't use functions like np.histogram.
+    # It is easier if you flatten your image first.
+    histogram = np.zeros(256)
+    img = image.flatten()
+
+    for i in img:
+        histogram[i] += 1
+
     return histogram
 
 
