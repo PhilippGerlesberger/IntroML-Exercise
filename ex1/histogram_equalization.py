@@ -48,10 +48,20 @@ def compute_cdf(histogram: np.ndarray) -> np.ndarray:
 
 
 def equalize_image(image: np.ndarray, cdf: np.ndarray) -> np.ndarray:
-    # ToDo: Apply histogram equalization to the given image.
-    # ToDo: Hint: Flatten the image first and reshape it again in the end.
-    equalized_image = np.zeros(0)
-    return equalized_image
+    """
+    Apply histogram equalization to the given image.
+
+    Returns:
+        Equalized image as uint8 values with the original image shape.
+    """
+
+    equalized_image = np.zeros(image.shape, dtype=np.uint8).flatten()
+    c_min = [i for i in cdf if i != 0][0]
+
+    for idx, value in enumerate(image.flatten()):
+        equalized_image[idx] = (cdf[value] - c_min) / (1 - c_min) * 255
+
+    return equalized_image.reshape(image.shape)
 
 
 def save_image(image: np.ndarray, path: str) -> None:
