@@ -28,9 +28,22 @@ def compute_histogram(image: np.ndarray) -> np.ndarray:
 
 
 def compute_cdf(histogram: np.ndarray) -> np.ndarray:
-    # ToDo: Compute the CDF.
-    # ToDo: Don't forget to normalize it (turn it into a distribution).
-    cdf = np.zeros(0)
+    """
+    Compute the CDF.
+    """
+
+    current_sum = 0
+    length = len(histogram)
+    cdf = np.zeros(length)
+
+    # Normalize histogram (turn it into a distribution).
+    pdf = histogram / np.sum(histogram)
+
+    # Compute CDF
+    for i in range(length):
+        current_sum += pdf[i]
+        cdf[i] = current_sum
+
     return cdf
 
 
