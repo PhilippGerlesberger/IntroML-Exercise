@@ -166,6 +166,13 @@ class ImageProcessor:
         num_rotation : int = (degrees // 90) % 4
 
         # Rotate the image depending on the given rotation value.
+        """
+        Example: num_rotation = 1
+
+        Original                                        rotation by 90 degrees
+          1 2    --Vertical Flip-->   3 4     --Transpose-->    3 1
+          3 4                         1 2                       4 2
+        """
         if num_rotation == 0:
             return
         elif num_rotation == 1:
