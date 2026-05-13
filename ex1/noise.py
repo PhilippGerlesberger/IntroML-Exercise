@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 from pathlib import Path
 
+rng = np.random.default_rng()
 
 def load_image(file_path: str) -> np.ndarray:
     # Load the image (either gray or colour).
@@ -18,28 +19,53 @@ def save_image(image: np.ndarray, file_path: str) -> None:
 
 
 def add_gaussian_noise(image: np.ndarray, mean: float = 0.0, sigma: float = 10.0) -> np.ndarray:
-    # ToDo: Generate gaussian noise and add it to the image.
-    # ToDo: Hint: Look at the options among np.random to generate the noise.
-    # ToDo: Hint: Don't forget to clip the values.
-    return image
+    """
+    Generate gaussian noise and add it to the image.
+    """
+
+    noisy_image = image + rng.normal(loc = mean, scale = sigma, size = image.shape)
+    noisy_image = noisy_image.clip(0, 255)
+
+    return noisy_image.astype(np.uint8)
 
 
 def add_salt_and_pepper_noise(image: np.ndarray, salt_prob: float = 0.01, pepper_prob: float = 0.01) -> np.ndarray:
-    # ToDo: Generate random salt and pepper noise based on the provided probabilities.
-    # ToDo: Hint: Look at the options among np.random to generate the noise.
-    return image
+    """
+    Generate random salt and pepper noise based on the provided probabilities.
+    """
+    noisy_image = image.copy()
+    random_values = rng.random(image.shape)
+
+    salt_mask = random_values <= salt_prob
+    pepper_mask = random_values >= 1 - pepper_prob
+
+    noisy_image[salt_mask] = 255
+    noisy_image[pepper_mask] = 0
+
+    return noisy_image.astype(dtype=np.uint8)
 
 
 def add_poisson_noise(image: np.ndarray) -> np.ndarray:
-    # ToDo: Add poisson noise to the image.
-    # ToDo: Hint: Look at the options among np.random to generate the noise.
-    return image
+    """
+    Add poisson noise to the image.
+    """
+
+    # TODO image als rate? wieso kein willkuerlicher wert?
+    noisy_image = rng.poisson(lam = image, size=image.shape)
+    noisy_image = noisy_image.clip(0, 255)
+
+    return noisy_image.astype(np.uint8)
 
 
 def add_uniform_noise(image: np.ndarray, low: float = -20.0, high: float = 20.0) -> np.ndarray:
-    # ToDo: Add uniform noise to the image, which is sampled uniformly from the available values.
-    # ToDo: Hint: Look at the options among np.random to generate the noise.
-    return image
+    """
+    Add uniform noise to the image, which is sampled uniformly from the available values.
+    """
+
+    noisy_image = image + rng.uniform(low, high, image.shape)
+    noisy_image = noisy_image.clip(0, 255)
+
+    return noisy_image.astype(np.uint8)
 
 
 def display_images(original: np.ndarray, processed: np.ndarray, title: str) -> None:
@@ -52,12 +78,24 @@ def display_images(original: np.ndarray, processed: np.ndarray, title: str) -> N
 
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
-    plt.imshow(adapted_original_image, cmap=None if adapted_original_image.ndim == 3 else 'gray')
+    print(original.ndim, processed.ndim)
+
+    plt.imshow(
+        adapted_original_image,
+        cmap=None if adapted_original_image.ndim == 3 else 'gray',
+        vmin=None if adapted_original_image.ndim == 3 else 0,
+        vmax=None if adapted_original_image.ndim == 3 else 255,
+    )
     plt.title('Original')
     plt.axis('off')
 
     plt.subplot(1, 2, 2)
-    plt.imshow(adapted_noise_image, cmap=None if adapted_noise_image.ndim == 3 else 'gray')
+    plt.imshow(
+        adapted_noise_image,
+        cmap=None if adapted_noise_image.ndim == 3 else 'gray',
+        vmin=None if adapted_noise_image.ndim == 3 else 0,
+        vmax=None if adapted_noise_image.ndim == 3 else 255,
+    )
     plt.title(title)
     plt.axis('off')
 
