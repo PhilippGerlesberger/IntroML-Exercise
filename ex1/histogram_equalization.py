@@ -55,13 +55,10 @@ def equalize_image(image: np.ndarray, cdf: np.ndarray) -> np.ndarray:
         Equalized image as uint8 values with the original image shape.
     """
 
-    equalized_image = np.zeros(image.shape, dtype=np.uint8).flatten()
-    c_min = [i for i in cdf if i != 0][0]
+    c_min = cdf[cdf != 0][0]
+    equalized_image = ((cdf[image] - c_min) / (1 - c_min)) * 255
 
-    for idx, value in enumerate(image.flatten()):
-        equalized_image[idx] = (cdf[value] - c_min) / (1 - c_min) * 255
-
-    return equalized_image.reshape(image.shape)
+    return equalized_image.astype(np.uint8)
 
 
 def save_image(image: np.ndarray, path: str) -> None:
