@@ -14,7 +14,7 @@ def load_image(path: str) -> np.ndarray:
 def compute_histogram(image: np.ndarray) -> np.ndarray:
     """Compute a grayscale histogram with 256 bins."""
     if image is None or len(image.shape) != 2:
-        raise ValueError("Input image must be a 2D grayscale image.")   
+        raise ValueError("Input image must be a 2D grayscale image.")
     image = image.astype(np.uint8)
     histogram = np.bincount(image.flatten(), minlength=256)
     plt.bar(range(256), histogram, color='black')
@@ -28,8 +28,8 @@ def compute_histogram(image: np.ndarray) -> np.ndarray:
 
 def p_helper(prob: np.ndarray, theta: int) -> tuple[float, float]:
     """Compute class probabilities p0 and p1 for threshold theta."""
-    p0 = np.sum(prob[:theta + 1])  
-    p1 = np.sum(prob[theta + 1:])  
+    p0 = np.sum(prob[:theta + 1])
+    p1 = np.sum(prob[theta + 1:])
 
     return p0, p1
 
@@ -55,19 +55,8 @@ def otsu_threshold(histogram: np.ndarray) -> int:
     max_sigma_inter = -1
 
     for theta in range(256):
-        p0 = np.sum(prob[:theta + 1])
-        p1 = np.sum(prob[theta + 1:])
-        if p0 == 0 or p1 == 0:
-            continue
-        mu0 = (
-            np.sum(np.arange(theta + 1) * prob[:theta + 1])
-            / p0
-        )
-
-        mu1 = (
-            np.sum(np.arange(theta + 1, 256) * prob[theta + 1:])
-            / p1
-        )
+        p0, p1 = p_helper(prob, theta)
+        mu0, mu1 = mu_helper(prob, theta, p0, p1)
         sigma_inter = p0 * p1 * (mu1 - mu0) ** 2
         if sigma_inter > max_sigma_inter:
             max_sigma_inter = sigma_inter
@@ -114,8 +103,8 @@ if __name__ == '__main__':
     loaded_image = load_image(str(base_dir / 'data' / 'runes.png'))
 
     # Compute Otsu's binarization or perform a custom binarization. Comment out one of the options.
-    # binarized_image, threshold = otsu_binarize(loaded_image)
-    binarized_image, threshold = custom_binarization(loaded_image, 180)
+    binarized_image, threshold = otsu_binarize(loaded_image)
+    # binarized_image, threshold = custom_binarization(loaded_image, 180)
 
     # Display the original and the binarized image next to each other.
     plt.figure(figsize=(8, 4))
