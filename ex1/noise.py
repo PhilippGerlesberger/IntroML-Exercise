@@ -50,7 +50,6 @@ def add_poisson_noise(image: np.ndarray) -> np.ndarray:
     Add poisson noise to the image.
     """
 
-    # TODO image als rate? wieso kein willkuerlicher wert?
     noisy_image = rng.poisson(lam = image, size=image.shape)
     noisy_image = noisy_image.clip(0, 255)
 

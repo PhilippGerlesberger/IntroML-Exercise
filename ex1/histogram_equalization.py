@@ -19,9 +19,8 @@ def compute_histogram(image: np.ndarray) -> np.ndarray:
     # Don't use functions like np.histogram.
     # It is easier if you flatten your image first.
     histogram = np.zeros(256)
-    img = image.flatten()
 
-    for i in img:
+    for i in image.flatten():
         histogram[i] += 1
 
     return histogram
@@ -32,17 +31,15 @@ def compute_cdf(histogram: np.ndarray) -> np.ndarray:
     Compute the CDF.
     """
 
-    current_sum = 0
-    length = len(histogram)
-    cdf = np.zeros(length)
-
-    # Normalize histogram (turn it into a distribution).
-    pdf = histogram / np.sum(histogram)
+    num_bins = len(histogram)
+    pdf = histogram / np.sum(histogram) # Normalize histogram (turn it into a distribution).
+    cdf = np.zeros(num_bins)
+    cumulativ_prob = 0.0
 
     # Compute CDF
-    for i in range(length):
-        current_sum += pdf[i]
-        cdf[i] = current_sum
+    for i in range(num_bins):
+        cumulativ_prob += pdf[i]
+        cdf[i] = cumulativ_prob
 
     return cdf
 
