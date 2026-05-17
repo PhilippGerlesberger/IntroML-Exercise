@@ -31,8 +31,9 @@ def compute_cdf(histogram: np.ndarray) -> np.ndarray:
     Compute the CDF.
     """
 
+    # Normalize histogram (turn it into a distribution).
+    pdf = histogram / np.sum(histogram)
     num_bins = len(histogram)
-    pdf = histogram / np.sum(histogram) # Normalize histogram (turn it into a distribution).
     cdf = np.zeros(num_bins)
     cumulativ_prob = 0.0
 
