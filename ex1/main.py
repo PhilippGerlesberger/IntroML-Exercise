@@ -22,6 +22,7 @@ from otsu import load_image as load_image_otsu, otsu_binarize
 if __name__ == "__main__":
     base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / "data"
+    output_dir = base_dir / "data" / "output"
 
     otsu_input = data_dir / "runes.png"
     otsu_image = load_image_otsu(str(otsu_input))
@@ -33,7 +34,7 @@ if __name__ == "__main__":
         print(f"Otsu threshold: {otsu_threshold}")
 
     hist_input = data_dir / "hello.png"
-    hist_output = data_dir / "kitty.png"
+    hist_output = output_dir / "kitty.png"
     hist_image = load_image_hist(str(hist_input))
     histogram = compute_histogram(hist_image)
     cdf = compute_cdf(histogram)
@@ -57,10 +58,10 @@ if __name__ == "__main__":
     if preview_noise.size == 0:
         print("Noise generation not implemented yet.")
     else:
-        save_image_noise(preview_noise, str(data_dir / noise_tasks[0][1]))
+        save_image_noise(preview_noise, str(output_dir / noise_tasks[0][1]))
         for generator, output_name in noise_tasks[1:]:
             noisy = generator(noise_image)
             if noisy.size == 0:
                 print("Noise generation not fully implemented yet.")
                 break
-            save_image_noise(noisy, str(data_dir / output_name))
+            save_image_noise(noisy, str(output_dir / output_name))

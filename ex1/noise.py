@@ -102,15 +102,21 @@ def display_images(original: np.ndarray, processed: np.ndarray, title: str) -> N
     plt.show()
 
 
-if __name__ == '__main__':
-    # Example usage
+def process_images(file_name: str):
     base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / 'data'
-    input_file = str(data_dir / 'hello.png')
-    gaussian_file = str(data_dir / 'hello_gaussian.png')
-    salt_pepper_file = str(data_dir / 'hello_salt_pepper.png')
-    poisson_file = str(data_dir / 'hello_poisson.png')
-    uniform_file = str(data_dir / 'hello_uniform.png')
+    output_dir = data_dir / 'output'
+    output_dir.mkdir(parents=True, exist_ok=True)
+    file_path = Path(file_name)
+    input_file = str(data_dir / file_path.name)
+
+    stem = file_path.stem
+    suffix = file_path.suffix
+
+    gaussian_file = str(output_dir / f'{stem}_gaussian{suffix}')
+    salt_pepper_file = str(output_dir / f'{stem}_salt_pepper{suffix}')
+    poisson_file = str(output_dir / f'{stem}_poisson{suffix}')
+    uniform_file = str(output_dir / f'{stem}_uniform{suffix}')
 
     original_image = load_image(input_file)
 
@@ -132,3 +138,8 @@ if __name__ == '__main__':
     display_images(original_image, salt_pepper, 'Salt & Pepper Noise')
     display_images(original_image, poisson, 'Poisson Noise')
     display_images(original_image, uniform, 'Uniform Noise')
+
+
+if __name__ == '__main__':
+    process_images("hello.png")
+    # process_images("contrast.jpg")

@@ -91,13 +91,44 @@ def histogram_equalization(input_path: str, output_path: str) -> None:
         save_image(equalized_image, output_path)
 
 
+def histogram_equalization_debug(input_path: str, output_path: str) -> None:
+        """
+        Save the histograms of the input and output images.
+        """
+        input_image = load_image(input_path)
+        input_histogram = compute_histogram(input_image)
+
+        output_img = load_image(output_path)
+        outputh_histogram = compute_histogram(output_img)
+
+        plt.subplot(1, 2, 1)
+        plt.bar(range(256), input_histogram, color='black')
+        plt.title('Input Image Histogram')
+        plt.xlabel('Pixel Intensity')
+        plt.ylabel('Frequency')
+        plt.xlim(0, 255)
+
+        plt.subplot(1, 2, 2)
+        plt.bar(range(256), outputh_histogram, color='black')
+        plt.title('Output Image Histogram')
+        plt.xlabel('Pixel Intensity')
+        plt.ylabel('Frequency')
+        plt.xlim(0, 255)
+        plt.tight_layout()
+        plt.savefig('ex1/data/debug/histogram_equalization.png')
+        plt.close()
+
+
 if __name__ == '__main__':
     # Load the images and perform histogram equalization.
     base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / 'data'
+    output_dir = data_dir / 'output'
     input_image_path = str(data_dir / 'hello.png')
-    output_image_path = str(data_dir / 'kitty.png')
+    output_image_path = str(output_dir / 'kitty.png')
     histogram_equalization(input_image_path, output_image_path)
+
+    histogram_equalization_debug(input_image_path, output_image_path)
 
     # Show the images next to each other.
     original = load_image(input_image_path)
