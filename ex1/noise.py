@@ -20,7 +20,19 @@ def save_image(image: np.ndarray, file_path: str) -> None:
 
 def add_gaussian_noise(image: np.ndarray, mean: float = 0.0, sigma: float = 10.0) -> np.ndarray:
     """
-    Generate gaussian noise and add it to the image.
+    Add Gaussian noise to an image.
+
+    Parameters:
+        image: Input image to which noise is added.
+        mean: Mean of the Gaussian distribution.
+            Positive values shift pixel intensities upward. (brighter)
+            Negative values shift them downward. (darker)
+        sigma: Standard deviation of the Gaussian distribution.
+            Larger values produce stronger random fluctuations around the mean.
+
+    Returns:
+        The noisy image clipped to the valid range [0, 255] and converted to
+        uint8.
     """
 
     noisy_image = image + rng.normal(loc = mean, scale = sigma, size = image.shape)
@@ -77,7 +89,6 @@ def display_images(original: np.ndarray, processed: np.ndarray, title: str) -> N
 
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
-    print(original.ndim, processed.ndim)
 
     plt.imshow(
         adapted_original_image,
