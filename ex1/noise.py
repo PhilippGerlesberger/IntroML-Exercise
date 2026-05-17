@@ -34,7 +34,7 @@ def add_salt_and_pepper_noise(image: np.ndarray, salt_prob: float = 0.01, pepper
     Generate random salt and pepper noise based on the provided probabilities.
     """
     noisy_image = image.copy()
-    random_values = rng.random(image.shape)
+    random_values = rng.random(image.shape[:2])
 
     salt_mask = random_values <= salt_prob
     pepper_mask = random_values >= 1 - pepper_prob
