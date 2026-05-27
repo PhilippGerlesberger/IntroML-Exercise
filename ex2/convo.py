@@ -3,6 +3,8 @@ from PIL import Image
 import numpy as np
 #from numpy.matlib import zeros
 import matplotlib.pyplot as plt
+from pathlib import Path
+import os
 
 
 def make_kernel(ksize, sigma):
@@ -49,15 +51,23 @@ def slow_convolve(arr, k):
 
 
 if __name__ == '__main__':
-    kernel_size = 3
+    # Load the images and perform histogram equalization.
+    base_dir = Path(__file__).resolve().parent
+    data_dir = base_dir / 'data'
+    output_dir = data_dir / 'output'
+    kernel_size = 77
     sig = kernel_size / 5
     k = make_kernel(kernel_size, sig)   # todo: find better parameters
-    
+
+    input1_path = data_dir / 'input1.jpg'
+    input2_path = data_dir / 'input2.jpg'
+    input3_path = data_dir / 'input3.jpg'
+
     # TODO: chose the image you prefer
     #im = np.array(Image.open('input1.jpg'))
     # im = np.array(Image.open('input2.jpg'))
-    im = np.array(Image.open('./data/input3.jpg'))
-    
+    im = np.array(Image.open(input1_path))
+
     # TODO: blur the image, subtract the result to the input,
     #       add the result to the input, clip the values to the
     #       range [0,255] (remember warme-up exercise?), convert
@@ -82,8 +92,8 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.show()
-    path = "data/results/convolution.png"
-    import os
+    path = str(data_dir / 'results/convolution.png')
+
     print(os.getcwd())
     print("Saving to:", os.path.abspath(path))
     plt.imsave(path, result_clipped)
