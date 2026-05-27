@@ -55,7 +55,7 @@ if __name__ == '__main__':
     base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / 'data'
     output_dir = data_dir / 'output'
-    kernel_size = 77
+    kernel_size = 25
     sig = kernel_size / 5
     k = make_kernel(kernel_size, sig)   # todo: find better parameters
 
