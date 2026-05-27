@@ -7,3 +7,6 @@ venv/
 
 # vscode
 .vscode/
+
+# generated result images
+ex2/data/results/convolution.png
