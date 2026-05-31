@@ -126,42 +126,67 @@ def show_image(image_array: np.ndarray, title: str = ""):
     plt.show()
 
 
+def perform_opening(input_image, SE, output_dir, iterations=1):
+    """
+    Perform opening on the input image and save the result.
+    """
+    opened = open_binary(input_image, SE, iterations=iterations)
+    show_image(opened, f'Opened Image {iterations} iterations')
+    save_binary(opened, output_dir / f'opened_{iterations}_iterations.png')
+
+
+def perform_closing(input_image, SE, output_dir, iterations=1):
+    """
+    Perform closing on the input image and save the result.
+    """
+    closed = close_binary(input_image, SE, iterations=iterations)
+    show_image(closed, f'Closed Image {iterations} iterations')
+    save_binary(closed, output_dir / f'closed_{iterations}_iterations.png')
+
+
+def perform_erosion(input_image, SE, output_dir, iterations=3):
+    """
+    Perform erosion on the input image and save the result.
+    """
+    eroded = repeat_operation(input_image, erode_binary, SE, iterations)
+    show_image(eroded, f'Eroded Image {iterations} iterations')
+    save_binary(eroded, output_dir / f'eroded_{iterations}_iterations.png')
+
+
+def perform_dilation(input_image, SE, output_dir, iterations=7):
+    """
+    Perform dilation on the input image and save the result.
+    """
+    dilated = repeat_operation(input_image, dilate_binary, SE, iterations)
+    show_image(dilated, f'Dilated Image {iterations} iterations')
+    save_binary(dilated, output_dir / f'dilated_{iterations}_iterations.png')
+
+
 if __name__ == '__main__':
     # Paths.
     base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / 'data'
     output_dir = data_dir / 'output'
-
     raw_erosion_image_path = data_dir / 'erosion_image_raw.png'
     raw_dilation_image_path = data_dir / 'dilation_image_raw.png'
-    erosion_out_path = output_dir / 'erosion_output.png'
-    dilation_out_path = output_dir / 'dilation_output.png'
 
     # Load images.
     erosion_input = load_binary(raw_erosion_image_path)
     dilation_input = load_binary(raw_dilation_image_path)
 
-    eroded = load_binary(raw_erosion_image_path)
-    dilated = dilation_input.copy()
-
-
     # Structuring element.
     SE = np.ones((5, 5), dtype=np.uint8)
 
-    # Erosion.
-    # ToDo: Perform erosion multiple times until the circles separate from each other.
+    # Perform opening and closing.
+    #perform_opening(erosion_input, SE, output_dir)
+    #perform_closing(dilation_input, SE, output_dir)
 
-    for i in range(11):
-        eroded = erode_binary(eroded, SE)
-        erosion_file = erosion_out_path.with_name(f'{erosion_out_path.stem}_{i}{erosion_out_path.suffix}')
-        save_binary(eroded, erosion_file)
-        if i % 10 == 0: show_image(eroded, f'Erosion Output{i}')
+    # Perform erosion:
+    # Repeatetly shrink the image until the circles are completely separated.
+    perform_erosion(erosion_input, SE, output_dir, 3)
+    perform_erosion(erosion_input, SE, output_dir, 4)
 
-    # Dilation.
-    # ToDo: Perform dilation multiple times until the hole closes.
-    for i in range(11):
-        dilated = dilate_binary(dilated, SE)
-        dilation_file = dilation_out_path.with_name(f'{dilation_out_path.stem}_{i}{dilation_out_path.suffix}')
-        save_binary(dilated, dilation_file)
-
-        if i % 10 == 0: show_image(dilated, f'Dilation Output{i}')
+    # Perform dilation:
+    # Repeatetly grow the shapes until the central hole is filled.
+    perform_dilation(dilation_input, SE, output_dir, 7)
+    perform_dilation(dilation_input, SE, output_dir, 8)
