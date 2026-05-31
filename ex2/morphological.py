@@ -83,26 +83,25 @@ def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndar
                 output[row, col] = 1
     return output
 
+def repeat_operation(image: np.ndarray, operation_func, structuring_element: np.ndarray, iterations: int) -> np.ndarray:
+    result = image
+    for _ in range(iterations):
+        result = operation_func(result, structuring_element)
+    return result
 
 def open_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterations: int = 1) -> np.ndarray:
     # ToDo: Perform opening (erosion followed by dilation).
     result = input_image.copy()
-
-    for _ in range(iterations):
-        result = erode_binary(result, structuring_element)
-        result = dilate_binary(result, structuring_element)
-
+    result = repeat_operation(result, erode_binary, structuring_element, iterations)
+    result = repeat_operation(result, dilate_binary, structuring_element, iterations)
     return result
 
 
 def close_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterations: int = 1) -> np.ndarray:
     # ToDo: Perform closing (dilation followed by erosion).
     result = input_image.copy()
-
-    for _ in range(iterations):
-        result = dilate_binary(result, structuring_element)
-        result = erode_binary(result, structuring_element)
-
+    result = repeat_operation(result, dilate_binary, structuring_element, iterations)
+    result = repeat_operation(result, erode_binary, structuring_element, iterations)
     return result
 
 
