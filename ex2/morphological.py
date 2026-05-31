@@ -90,7 +90,7 @@ def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndar
 
     return output
 
-def repeat_operation(image: np.ndarray, operation_func, structuring_element: np.ndarray, iterations: int) -> np.ndarray:
+def repeat_operation(operation_func, image: np.ndarray, structuring_element: np.ndarray, iterations: int) -> np.ndarray:
     result = image
     for _ in range(iterations):
         result = operation_func(result, structuring_element)
@@ -101,8 +101,8 @@ def open_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterat
     Perform opening (erosion followed by dilation) on the input image.
     """
     result = input_image.copy()
-    result = repeat_operation(result, erode_binary, structuring_element, iterations)
-    result = repeat_operation(result, dilate_binary, structuring_element, iterations)
+    result = repeat_operation(erode_binary, result, structuring_element, iterations)
+    result = repeat_operation(dilate_binary, result, structuring_element, iterations)
     return result
 
 
@@ -111,8 +111,8 @@ def close_binary(input_image: np.ndarray, structuring_element: np.ndarray, itera
     Perform closing (dilation followed by erosion) on the input image.
     """
     result = input_image.copy()
-    result = repeat_operation(result, dilate_binary, structuring_element, iterations)
-    result = repeat_operation(result, erode_binary, structuring_element, iterations)
+    result = repeat_operation(dilate_binary, result, structuring_element, iterations)
+    result = repeat_operation(erode_binary, result, structuring_element, iterations)
     return result
 
 
@@ -166,7 +166,7 @@ def perform_erosion(input_image, SE, output_dir, iterations=3):
     """
     Perform erosion on the input image and save the result.
     """
-    eroded = repeat_operation(input_image, erode_binary, SE, iterations)
+    eroded = repeat_operation(erode_binary, input_image, SE, iterations)
     show_image(eroded, f'Eroded Image {iterations} iterations')
     save_binary(eroded, output_dir / f'eroded_{iterations}_iterations.png')
 
@@ -175,7 +175,7 @@ def perform_dilation(input_image, SE, output_dir, iterations=7):
     """
     Perform dilation on the input image and save the result.
     """
-    dilated = repeat_operation(input_image, dilate_binary, SE, iterations)
+    dilated = repeat_operation(dilate_binary, input_image, SE, iterations)
     show_image(dilated, f'Dilated Image {iterations} iterations')
     save_binary(dilated, output_dir / f'dilated_{iterations}_iterations.png')
 
