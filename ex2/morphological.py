@@ -30,6 +30,7 @@ def erode_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarr
     se_size = structuring_element.shape[0]
     assert se_size == structuring_element.shape[1], "SE must be quadratic."
     assert se_size % 2 == 1, "SE size must be uneven."
+    active = structuring_element == 1
 
     # ToDo: Create the padded image and an empty output image that can be filled later.
     padded_image = pad_image(image, se_size // 2)
@@ -47,8 +48,8 @@ def erode_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarr
         for col in range(image_x):
             region = extract_region(padded_image, row + (se_size // 2), col + (se_size // 2), se_size)
 
-            neigbourhood = np.sum(region)
-            if neigbourhood == se_size**2:
+            # ToDo: Check if the structuring element fits in the region (i.e. all pixels under the SE are 1).
+            if np.all(region[active] == 1):
                 output[row, col] = 1
 
     return output
@@ -59,6 +60,7 @@ def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndar
     se_size = structuring_element.shape[0]
     assert se_size == structuring_element.shape[1], "SE must be quadratic."
     assert se_size % 2 == 1, "SE size must be uneven."
+    active = structuring_element == 1
 
     # ToDo: Create the padded image and an empty output image that can be filled later.
     padded_image = pad_image(image, se_size // 2)
@@ -78,9 +80,9 @@ def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndar
         for col in range(image_x):
             region = extract_region(padded_image, row + (se_size // 2), col + (se_size // 2), se_size)
 
-            neigbourhood = np.sum(region)
-            if neigbourhood != 0:
+            if np.any(region[active] == 1):
                 output[row, col] = 1
+
     return output
 
 def repeat_operation(image: np.ndarray, operation_func, structuring_element: np.ndarray, iterations: int) -> np.ndarray:
