@@ -1,3 +1,6 @@
+from PIL import Image
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import convolve
@@ -188,6 +191,16 @@ def canny(img):
     plt.imshow(maxS_img, 'gray')
     plt.show()
 
-    result = hysteris(maxS_img, 50, 75)
+    hysteris_img = hysteris(maxS_img, 50, 75)
 
-    return result
+    # plotting
+    plt.imshow(hysteris_img, 'gray')
+    plt.title('Canny image')
+    plt.colorbar()
+    plt.show()
+
+
+if __name__ == "__main__":
+    img = Image.open(Path(__file__).parent / "data" / "contrast.jpg").convert('L')
+    img_array = np.array(img, dtype=np.uint8)
+    canny(img_array)
