@@ -5,10 +5,10 @@ from pathlib import Path
 
 
 def extract_region(padded_image: np.ndarray, center_row: int, center_col: int, window_size: int) -> np.ndarray:
-    # The function receives a padded image (pad_image) and the current pixel of our padded image.
-    # ToDo: Return the surrounding area around that center pixel with the given size (window_size).
-    # ToDo: Use slicing.
-
+    """
+    The function receives a padded image (pad_image) and the current pixel of our padded image.
+    Return the surrounding area around that center pixel with the given size (window_size).
+    """
     half_window = window_size // 2
 
     row_start = center_row - half_window
@@ -21,18 +21,22 @@ def extract_region(padded_image: np.ndarray, center_row: int, center_col: int, w
 
 
 def pad_image(image: np.ndarray, padding_size: int) -> np.ndarray:
-    # Pad the image with zeros.
+    """
+    Pad the image with zeros.
+    """
     return np.pad(image, pad_width=padding_size, mode='constant', constant_values=0)
 
 
 def erode_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarray:
-    # Apply erosion on the given image using the structuring element.
+    """
+    Apply erosion on the given image using the structuring element.
+    """
     se_size = structuring_element.shape[0]
     assert se_size == structuring_element.shape[1], "SE must be quadratic."
     assert se_size % 2 == 1, "SE size must be uneven."
     active = structuring_element == 1
 
-    # ToDo: Create the padded image and an empty output image that can be filled later.
+    # Create the padded image and an empty output image that can be filled later.
     padded_image = pad_image(image, se_size // 2)
     output = np.zeros_like(image)
 
@@ -40,15 +44,14 @@ def erode_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarr
     image_x = image.shape[1]
 
 
-    # ToDo: Iterate over the provided image and perform erosion around each pixel.
-    # ToDo: Hint: Use the extract_region function to get the area around each pixel.
-    # ToDo: Hint: Don't forget that the extract region function receives the padded image and the corresponding centers.
-
+    # Iterate over the provided image and perform erosion around each pixel.
+    # Hint: Use the extract_region function to get the area around each pixel.
+    # Hint: Don't forget that the extract region function receives the padded image and the corresponding centers.
     for row in range(image_y):
         for col in range(image_x):
             region = extract_region(padded_image, row + (se_size // 2), col + (se_size // 2), se_size)
 
-            # ToDo: Check if the structuring element fits in the region (i.e. all pixels under the SE are 1).
+            # Check if the structuring element fits in the region (i.e. all pixels under the SE are 1).
             if np.all(region[active] == 1):
                 output[row, col] = 1
 
@@ -56,13 +59,15 @@ def erode_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarr
 
 
 def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndarray:
-    # Apply dilation on the given image using the structuring element.
+    """
+    Apply dilation on the given image using the structuring element.
+    """
     se_size = structuring_element.shape[0]
     assert se_size == structuring_element.shape[1], "SE must be quadratic."
     assert se_size % 2 == 1, "SE size must be uneven."
     active = structuring_element == 1
 
-    # ToDo: Create the padded image and an empty output image that can be filled later.
+    # Create the padded image and an empty output image that can be filled later.
     padded_image = pad_image(image, se_size // 2)
     output = np.zeros_like(image)
 
@@ -72,14 +77,14 @@ def dilate_binary(image: np.ndarray, structuring_element: np.ndarray) -> np.ndar
     # Log padded image to file with all values
 
 
-    # ToDo: Iterate over the provided image and perform dilation around each pixel.
-    # ToDo: Hint: Use the extract_region function to get the area around each pixel.
-    # ToDo: Hint: Don't forget that the extract region function receives the padded image and the corresponding centers.
-
+    # Iterate over the provided image and perform dilation around each pixel.
+    # Hint: Use the extract_region function to get the area around each pixel.
+    # Hint: Don't forget that the extract region function receives the padded image and the corresponding centers.
     for row in range(image_y):
         for col in range(image_x):
             region = extract_region(padded_image, row + (se_size // 2), col + (se_size // 2), se_size)
 
+            # Check if the structuring element fits in the region (i.e. any pixel under the SE is 1).
             if np.any(region[active] == 1):
                 output[row, col] = 1
 
@@ -92,7 +97,9 @@ def repeat_operation(image: np.ndarray, operation_func, structuring_element: np.
     return result
 
 def open_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterations: int = 1) -> np.ndarray:
-    # ToDo: Perform opening (erosion followed by dilation).
+    """
+    Perform opening (erosion followed by dilation) on the input image.
+    """
     result = input_image.copy()
     result = repeat_operation(result, erode_binary, structuring_element, iterations)
     result = repeat_operation(result, dilate_binary, structuring_element, iterations)
@@ -100,7 +107,9 @@ def open_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterat
 
 
 def close_binary(input_image: np.ndarray, structuring_element: np.ndarray, iterations: int = 1) -> np.ndarray:
-    # ToDo: Perform closing (dilation followed by erosion).
+    """
+    Perform closing (dilation followed by erosion) on the input image.
+    """
     result = input_image.copy()
     result = repeat_operation(result, dilate_binary, structuring_element, iterations)
     result = repeat_operation(result, erode_binary, structuring_element, iterations)
@@ -108,7 +117,9 @@ def close_binary(input_image: np.ndarray, structuring_element: np.ndarray, itera
 
 
 def load_binary(filepath: str) -> np.ndarray:
-    # Load the image and binarize it again with a simple threshold.
+    """
+    Load the image and binarize it again with a simple threshold.
+    """
     img = Image.open(filepath).convert('L')
     arr = np.array(img, dtype=np.uint8)  # type: ignore
     binary_arr = (arr > 128).astype(np.uint8)
@@ -116,12 +127,17 @@ def load_binary(filepath: str) -> np.ndarray:
 
 
 def save_binary(image_array: np.ndarray, filepath: str):
-    # Save the binary image.
+    """
+    Save the binary image to the specified filepath.
+    """
     img = Image.fromarray((image_array * 255).astype(np.uint8))
     img.save(filepath)
 
 
 def show_image(image_array: np.ndarray, title: str = ""):
+    """
+    Display the image using matplotlib.
+    """
     plt.imshow(image_array, cmap='gray')
     plt.title(title)
     plt.axis('off')
