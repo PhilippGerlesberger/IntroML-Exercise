@@ -19,7 +19,7 @@ def mseDistance(imgA, imgB):
     # TODO: implement the MSE formula yourself with NumPy operations.
     # Allowed: astype, subtraction, squaring, mean, or an explicit sum divided by the number of pixels.
     # Not allowed: external metric/distance helpers from scipy, sklearn, cv2, etc.
-    pass
+    return np.mean((imgA - imgB)**2)
 
 
 def euclideanDistance(featureA, featureB):
@@ -32,4 +32,4 @@ def euclideanDistance(featureA, featureB):
     # TODO: implement the Euclidean distance formula yourself with NumPy operations.
     # Allowed: subtraction, squaring, sum, and sqrt.
     # Not allowed: external metric/distance helpers from scipy, sklearn, cv2, etc.
-    pass
+    return np.sqrt(np.sum((featureA - featureB)**2))
