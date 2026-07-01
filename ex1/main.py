@@ -24,7 +24,7 @@ if __name__ == "__main__":
     data_dir = base_dir / "data"
     output_dir = base_dir / "data" / "output"
 
-    otsu_input = data_dir / "runes.png"
+    otsu_input = data_dir / "contrast.jpg"
     otsu_image = load_image_otsu(str(otsu_input))
     otsu_result, otsu_threshold = otsu_binarize(otsu_image)
     if otsu_result.size == 0:

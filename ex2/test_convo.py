@@ -7,7 +7,7 @@ import unittest
 import cv2
 import numpy as np
 import os
-from convo import slow_convolve, make_kernel
+from ex2.convo import slow_convolve, make_kernel
 from scipy.signal import convolve
 
 # 5% tolerance

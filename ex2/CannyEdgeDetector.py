@@ -201,6 +201,6 @@ def canny(img):
 
 
 if __name__ == "__main__":
-    img = Image.open(Path(__file__).parent / "data" / "contrast.jpg").convert('L')
+    img = Image.open(Path(__file__).parent / "data" / "input1.jpg").convert('L')
     img_array = np.array(img, dtype=np.uint8)
     canny(img_array)
