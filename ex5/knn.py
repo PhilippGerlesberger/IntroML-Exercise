@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import numpy as np
+from scipy.stats import ansari
+from sklearn.metrics.pairwise import cosine_distances
 
 from visualization import plot_knn_neighbors
 
@@ -37,11 +39,23 @@ class KNNClassifier:
             - check that len(X) == len(y)
             - return self
         """
-        pass
+        # conversion to NumPy arrays
+        X = np.asarray(X)
+        y = np.asarray(y)
+
+        if X.ndim != 2:
+            raise ValueError("X must be two-dimensional.")
+        if len(X) != len(y):
+            raise ValueError("Lengths of X and y must be equal.")
+
+        self.X_train = X
+        self.y_train = y
+        return self
 
     def _euclidean_distances(self, x):
         """Return the Euclidean distance from x to all training samples."""
-        pass
+        diff = np.subtract(self.X_train, x)
+        return np.sqrt(np.sum(diff ** 2, axis=1))
 
     def _cosine_distances(self, x):
         """
@@ -53,7 +67,15 @@ class KNNClassifier:
 
         Make sure that zero vectors do not cause a division-by-zero error.
         """
-        pass
+        dot_prod = self.X_train @ x
+        denominator = np.linalg.norm(x) * np.linalg.norm(self.X_train, axis=1)
+
+        # Prevent division by 0
+        denominator[denominator == 0] = 1e-9
+
+        cos_similarity = dot_prod / denominator
+        return 1- cos_similarity
+
 
     def _majority_vote(self, neighbor_labels):
         """
@@ -63,7 +85,11 @@ class KNNClassifier:
             np.unique(..., return_counts=True) is useful here.
             If there is a tie, choose the smallest label after sorting.
         """
-        pass
+        labels, counts = np.unique(neighbor_labels, return_counts=True)
+        count_max = np.max(counts)
+        label_max = labels[counts == count_max]
+        # If more than one element is in the array then index 0 is the smallest label
+        return label_max[0]
 
     def predict(self, X):
         """
@@ -77,28 +103,35 @@ class KNNClassifier:
             - predict by majority vote
             - optionally save neighbour plots when plot_neighbors is True
         """
+        if self.X_train is None or self.y_train is None:
+            raise ValueError("Not fitted yet.")
         # Convert input data to a NumPy array.
         X = np.asarray(X)
 
         # If a single sample is passed, turn it into shape (1, n_features).
-
+        if X.ndim == 1:
+            X = X[None, :]
         predictions = []
         # Iterate over each test sample to predict its label.
         for sample_index, x in enumerate(X):
             if self.metric == "euclidean":
                 # Compute Euclidean distances from x to all training samples.
-                pass
+                distance = self._euclidean_distances(x)
             elif self.metric == "cosine":
                 # Compute cosine distances from x to all training samples.
-                pass
+                distance = self._cosine_distances(x)
             else:
                 raise ValueError(f"Unsupported metric: {self.metric}")
 
             # Find the indices of the k nearest neighbours.
+            nn_indices = np.argsort(distance)[:self.n_neighbors]
 
             # Get the labels of the nearest neighbours.
+            nn_labels = self.y_train[nn_indices]
 
             # Find the most common label and append it to predictions.
+            predicted_label = self._majority_vote(nn_labels)
+            predictions.append(predicted_label)
 
             if self.plot_neighbors and self.image_shape is not None:
                 test_image = x.reshape(self.image_shape)
